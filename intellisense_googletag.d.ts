@@ -1,11 +1,15 @@
 namespace googletag {
-    const NamedSize: string[];
-    const SingleSizeArray: [heigth: number, width: number];
-    const SingleSize: (SingleSizeArray[] | NamedSize[]);
-    const MultiSize: SingleSize[];
-    const GeneralSize: (SingleSize | MultiSize);
-    const SizeMapping: GeneralSize[];
-    const SizeMappingArray: SizeMapping[];
+    type NamedSize = string[];
+    type SingleSizeArray = [heigth: number, width: number];
+    type SingleSize = SingleSizeArray[] | NamedSize[];
+    // type SingleSize = SingleSizeArray[];
+    // type SingleSize = NamedSize[];
+    type MultiSize = SingleSize[];
+    type GeneralSize = SingleSize | MultiSize;
+    // type GeneralSize = SingleSize;
+    // type GeneralSize = MultiSize;
+    type SizeMapping = GeneralSize[];
+    type SizeMappingArray = SizeMapping[];
     namespace enums {
         interface OutOfPageFormat {
             TOP_ANCHOR: number;
@@ -131,10 +135,10 @@ namespace googletag {
         /**Enables and disables horizontal centering of ads.*/
         setCentering(centerAds: boolean): void;
         /**Enables Google Ad Manager cookies on ad requests on the page. This option is set by default.
-*/
+    */
         setCookieOptions(options: 0): PubAdsService;
         /**Ignores Google Ad Manager cookies on subsequent ad requests and prevents cookies from being created on the page. Note that cookies will not be ignored on certain pingbacks and that this option will disable features that rely on cookies, such as dynamic allocation.
-*/
+    */
         setCookieOptions(options: 1): PubAdsService;
         /**Configures whether all ads on the page should be forced to be rendered using a SafeFrame container.*/
         setForceSafeFrame(forceSafeFrame: boolean): PubAdsService;
@@ -168,6 +172,12 @@ namespace googletag {
         restrictDataProcessing: boolean;
         /**underAgeOfConsent configuration indicates whether to mark ad requests as coming from users under the age of consent.*/
         underAgeOfConsent: boolean;
+    };
+    interface SizeMappingBuilder {
+        /**Adds a mapping from a single-size array representing the viewport to either a single-size array or a multi-size array representing the slot.*/
+        addSize(viewportSize: SingleSizeArray, slotSize: GeneralSize): SizeMappingBuilder;
+        /**Builds a size map specification from the mappings added to this builder.*/
+        build(): SizeMappingArray;
     };
 };
 export interface googletag {
@@ -204,4 +214,8 @@ export interface googletag {
     openConsole(opt_div: string): void;
     /**Returns a reference to the pubads service.*/
     pubads(): googletag.PubAdsService;
+    /**Sets that title for all ad container iframes created by pubads service, from this point onwards.*/
+    setAdIframeTitle(title: string): void;
+    /**Creates a new SizeMappingBuilder.*/
+    sizeMapping(): googletag.SizeMappingBuilder;
 };
