@@ -10,6 +10,10 @@ namespace googletag {
     // type GeneralSize = MultiSize;
     type SizeMapping = GeneralSize[];
     type SizeMappingArray = SizeMapping[];
+    interface CommandArray extends Array<Function> {
+        /**Executes the sequence of functions specified in the arguments in order.*/
+        push(f: Function): number;
+    }
     namespace enums {
         interface OutOfPageFormat {
             TOP_ANCHOR: number;
@@ -27,6 +31,31 @@ namespace googletag {
             serviceName: string;
             /**The slot that triggered the event.*/
             slot: Slot;
+        };
+        interface SlotOnloadEvent extends SlotOnloadEvent { };
+        interface SlotRenderEndedEvent extends Event {
+            /**Advertiser ID of the rendered ad. Value is null for empty slots, backfill ads or creatives rendered by services other than pubads service.*/
+            advertiserId: string;
+            /**Campaign ID of the rendered ad. Value is null for empty slots, backfill ads or creatives rendered by services other than pubads service.*/
+            campaignId: number;
+            /**Creative ID of the rendered reservation ad. Value is null for empty slots, backfill ads or creatives rendered by services other than pubads service.*/
+            creativeId: number;
+            /**true if no ad was returned for the slot, false otherwise.*/
+            isEmpty: boolean;
+            /**Line item ID of the rendered reservation ad. Value is null for empty slots, backfill ads or creatives rendered by services other than pubads service.*/
+            lineItemId: number;
+            /**Indicates the pixel size of the rendered creative. Value is null for empty ad slots.*/
+            size: SingleSizeArray;
+            /**Creative ID of the rendered reservation or backfill ad. Value is null if the ad is not a reservation or line item backfill or a creative rendered by services other than pubads service.*/
+            sourceAgnosticCreativeId: number;
+            /**Line item ID of the rendered reservation or backfill ad. Value is null if the ad is not a reservation or line item backfill or a creative rendered by services other than pubads service.*/
+            sourceAgnosticLineItemId: number;
+        };
+        interface SlotRequestedEvent extends Event { };
+        interface SlotResponseReceived extends Event { };
+        interface SlotVisibilityChangedEvent extends Event {
+            /**The percentage (0-100) of the ad's area that is visible.*/
+            inViewPercentage: number;
         };
     };
     interface CompanionAdsService {
@@ -96,6 +125,17 @@ namespace googletag {
         useUniqueDomain: boolean;
     };
     interface PubAdsService extends Service {
+        /**This event is fired when the creative's iframe fires its load event. When rendering rich media ads in sync rendering mode, no iframe is used so no SlotOnloadEvent will be fired.*/
+        addEventListener(eventType: "slotOnload", listener: (event: event.SlotOnloadEvent) => void);
+        /**This event is fired when the creative code is injected into a slot. This event will occur before the creative's resources are fetched, so the creative may not be visible yet. If you need to know when all creative resources for a slot have finished loading, consider the SlotOnloadEvent instead.*/
+        addEventListener(eventType: "slotRenderEnded", listener: (event: event.SlotRenderEndedEvent) => void);
+        /**This event is fired when an ad has been requested for a particular slot.*/
+        addEventListener(eventType: "slotRequested", listener: (event: event.SlotRequestedEvent) => void);
+        /**This event is fired when an ad response has been received for a particular slot.*/
+        addEventListener(eventType: "slotResponseReceived", listener: (event: event.SlotResponseReceived) => void);
+        addEventListener(eventType: "SlotVisibilityChangedEvent", listener: (event: event.SlotVisibilityChangedEvent) => void);
+        /**Registers a listener that allows you to set up and call a JavaScript function when a specific GPT event happens on the page.*/
+        addEventListener(eventType: string, listener: (event: event.Event) => void);
         /**Removes the ads from the given slots and replaces them with blank content.*/
         clear(opt_slots: Slot[]): boolean;
         /**Clears all page-level ad category exclusion labels.*/
@@ -184,7 +224,7 @@ export interface googletag {
     /**Flag indicating that GPT API is loaded and ready to be called.*/
     apiReady: boolean;
     /** Reference to the global command queue for asynchronous execution of GPT-related calls.*/
-    cmd: Function[];
+    cmd: googletag.CommandArray;
     /**Flag indicating that Pubads service is enabled, loaded and fully operational.*/
     pubadsReady: boolean;
     enums: googletag.enums;
