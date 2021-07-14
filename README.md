@@ -1,5 +1,5 @@
 # Intellisense googletag
-A TypeScript interface that enables intellisense for googletag.
+A TypeScript interface that enables intellisense for googletag. It can be imported in javascript (.js) files.
 
 <h1>How to import:</h1>
 
