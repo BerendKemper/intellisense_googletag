@@ -1,4 +1,4 @@
-namespace googletag {
+declare namespace googletag {
     type NamedSize = string[];
     type SingleSizeArray = [heigth: number, width: number];
     type SingleSize = SingleSizeArray[] | NamedSize[];
@@ -20,19 +20,19 @@ namespace googletag {
             BOTTOM_ANCHOR: number;
             REWARDED: number;
             INTERSTITIAL: number;
-        };
-    };
+        }
+    }
     interface enums {
         OutOfPageFormat: enums.OutOfPageFormat;
-    };
+    }
     namespace event {
         interface Event {
             //**Name of the service that triggered the event.*/
             serviceName: string;
             /**The slot that triggered the event.*/
             slot: Slot;
-        };
-        interface SlotOnloadEvent extends SlotOnloadEvent { };
+        }
+        interface SlotOnloadEvent extends Event { }
         interface SlotRenderEndedEvent extends Event {
             /**Advertiser ID of the rendered ad. Value is null for empty slots, backfill ads or creatives rendered by services other than pubads service.*/
             advertiserId: string;
@@ -50,22 +50,22 @@ namespace googletag {
             sourceAgnosticCreativeId: number;
             /**Line item ID of the rendered reservation or backfill ad. Value is null if the ad is not a reservation or line item backfill or a creative rendered by services other than pubads service.*/
             sourceAgnosticLineItemId: number;
-        };
-        interface SlotRequestedEvent extends Event { };
-        interface SlotResponseReceived extends Event { };
+        }
+        interface SlotRequestedEvent extends Event { }
+        interface SlotResponseReceived extends Event { }
         interface SlotVisibilityChangedEvent extends Event {
             /**The percentage (0-100) of the ad's area that is visible.*/
             inViewPercentage: number;
-        };
-    };
+        }
+    }
     interface CompanionAdsService {
         /**Sets whether companion slots that have not been filled will be automatically backfilled.*/
         setRefreshUnfilledSlots(value: boolean): void;
-    };
+    }
     interface ContentService {
         /**Fills a slot with the given content.*/
         setContent(slot: Slot, content: string): void;
-    };
+    }
     interface Slot {
         /**Adds a service to this slot.*/
         addService(content: Service): Slot;
@@ -107,13 +107,13 @@ namespace googletag {
         setTargeting(key: string, value: string): Slot;
         /**Sets custom targeting parameters for this slot, from a key:value map in a JSON object.*/
         updateTargetingFromMap(map): Slot;
-    };
+    }
     interface Service {
         /**Registers a listener that allows you to set up and call a JavaScript function when a specific GPT event happens on the page.*/
         addEventListener(eventType: string, listener: (event: event.Event) => void);
         /**Get the list of slots associated with this service.*/
         getSlots(): Slot[];
-    };
+    }
     interface SafeFrameConfig {
         /**true to allow expansion by overlay and false otherwise.*/
         allowOverlayExpansion: boolean;
@@ -123,7 +123,7 @@ namespace googletag {
         sandbox: boolean;
         /**Whether to use a unique subdomain for SafeFrame for Reservation creatives.*/
         useUniqueDomain: boolean;
-    };
+    }
     interface PubAdsService extends Service {
         /**This event is fired when the creative's iframe fires its load event. When rendering rich media ads in sync rendering mode, no iframe is used so no SlotOnloadEvent will be fired.*/
         addEventListener(eventType: "slotOnload", listener: (event: event.SlotOnloadEvent) => void);
@@ -202,7 +202,7 @@ namespace googletag {
         setVideoContent(videoContentId: string, videoCmsId: string): void;
         /**Changes the correlator that is sent with ad requests, effectively starting a new page view.*/
         updateCorrelator(): PubAdsService;
-    };
+    }
     interface PrivacySettingsConfig {
         /**childDirectedTreatment configuration indicates whether the page should be treated as child-directed.*/
         childDirectedTreatment: boolean;
@@ -212,14 +212,14 @@ namespace googletag {
         restrictDataProcessing: boolean;
         /**underAgeOfConsent configuration indicates whether to mark ad requests as coming from users under the age of consent.*/
         underAgeOfConsent: boolean;
-    };
+    }
     interface SizeMappingBuilder {
         /**Adds a mapping from a single-size array representing the viewport to either a single-size array or a multi-size array representing the slot.*/
         addSize(viewportSize: SingleSizeArray, slotSize: GeneralSize): SizeMappingBuilder;
         /**Builds a size map specification from the mappings added to this builder.*/
         build(): SizeMappingArray;
-    };
-};
+    }
+}
 export interface googletag {
     /**Flag indicating that GPT API is loaded and ready to be called.*/
     apiReady: boolean;
@@ -258,4 +258,4 @@ export interface googletag {
     setAdIframeTitle(title: string): void;
     /**Creates a new SizeMappingBuilder.*/
     sizeMapping(): googletag.SizeMappingBuilder;
-};
+}
