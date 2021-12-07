@@ -8,3 +8,4 @@ A TypeScript interface that enables intellisense for googletag. It can be import
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
 ```
+![image](https://user-images.githubusercontent.com/46784771/145021248-86df5da5-1ad5-4736-988e-8900d17173fb.png)
