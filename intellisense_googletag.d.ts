@@ -1,7 +1,7 @@
 declare namespace googletag {
     type NamedSize = string[];
     type SingleSizeArray = [heigth: number, width: number];
-    type SingleSize = SingleSizeArray[] | NamedSize[];
+    type SingleSize = SingleSizeArray | NamedSize;
     // type SingleSize = SingleSizeArray[];
     // type SingleSize = NamedSize[];
     type MultiSize = SingleSize[];
@@ -32,6 +32,7 @@ declare namespace googletag {
             /**The slot that triggered the event.*/
             slot: Slot;
         }
+        interface ImpressionViewableEvent extends Event { }
         interface SlotOnloadEvent extends Event { }
         interface SlotRenderEndedEvent extends Event {
             /**Advertiser ID of the rendered ad. Value is null for empty slots, backfill ads or creatives rendered by services other than pubads service.*/
@@ -113,6 +114,8 @@ declare namespace googletag {
         addEventListener(eventType: string, listener: (event: event.Event) => void);
         /**Get the list of slots associated with this service.*/
         getSlots(): Slot[];
+        /**Removes a previously registered listener. Returns whether an existing event listener was removed.*/
+        removeEventListener(eventType: string, listener: (event: event.Event) => void): boolean;
     }
     interface SafeFrameConfig {
         /**true to allow expansion by overlay and false otherwise.*/
@@ -125,6 +128,8 @@ declare namespace googletag {
         useUniqueDomain: boolean;
     }
     interface PubAdsService extends Service {
+        /**This event is fired when an impression becomes viewable, according to the Active View criteria.*/
+        addEventListener(eventType: "impressionViewable", listener: (event: event.ImpressionViewableEvent) => void);
         /**This event is fired when the creative's iframe fires its load event. When rendering rich media ads in sync rendering mode, no iframe is used so no SlotOnloadEvent will be fired.*/
         addEventListener(eventType: "slotOnload", listener: (event: event.SlotOnloadEvent) => void);
         /**This event is fired when the creative code is injected into a slot. This event will occur before the creative's resources are fetched, so the creative may not be visible yet. If you need to know when all creative resources for a slot have finished loading, consider the SlotOnloadEvent instead.*/
@@ -133,7 +138,7 @@ declare namespace googletag {
         addEventListener(eventType: "slotRequested", listener: (event: event.SlotRequestedEvent) => void);
         /**This event is fired when an ad response has been received for a particular slot.*/
         addEventListener(eventType: "slotResponseReceived", listener: (event: event.SlotResponseReceived) => void);
-        addEventListener(eventType: "SlotVisibilityChangedEvent", listener: (event: event.SlotVisibilityChangedEvent) => void);
+        addEventListener(eventType: "slotVisibilityChanged", listener: (event: event.SlotVisibilityChangedEvent) => void);
         /**Registers a listener that allows you to set up and call a JavaScript function when a specific GPT event happens on the page.*/
         addEventListener(eventType: string, listener: (event: event.Event) => void);
         /**Removes the ads from the given slots and replaces them with blank content.*/
@@ -168,17 +173,27 @@ declare namespace googletag {
         isInitialLoadDisabled(): boolean;
         /**Fetches and displays new ads for specific or all slots on the page.*/
         refresh(opt_slots: Slot[], opt_options: { changeCorrelator: boolean }): void;
+        /**Removes a previously registered listener. Returns whether an existing event listener was removed.*/
+        removeEventListener(eventType: "impressionViewable", listener: (event: event.ImpressionViewableEvent) => void): boolean;
+        /**Removes a previously registered listener. Returns whether an existing event listener was removed.*/
+        removeEventListener(eventType: "slotOnload", listener: (event: event.SlotOnloadEvent) => void): boolean;
+        /**Removes a previously registered listener. Returns whether an existing event listener was removed.*/
+        removeEventListener(eventType: "slotRenderEnded", listener: (event: event.SlotRenderEndedEvent) => void): boolean;
+        /**Removes a previously registered listener. Returns whether an existing event listener was removed.*/
+        removeEventListener(eventType: "slotRequested", listener: (event: event.SlotRequestedEvent) => void): boolean;
+        /**Removes a previously registered listener. Returns whether an existing event listener was removed.*/
+        removeEventListener(eventType: "slotResponseReceived", listener: (event: event.SlotResponseReceived) => void): boolean;
+        /**Removes a previously registered listener. Returns whether an existing event listener was removed.*/
+        removeEventListener(eventType: "slotVisibilityChanged", listener: (event: event.SlotVisibilityChangedEvent) => void): boolean;
         /**Sets values for AdSense attributes that apply to all ad slots under the publisher ads service.*/
         set(key: string, value: string): PubAdsService;
         /**Sets a page-level ad category exclusion for the given label name.*/
         setCategoryExclusion(categoryExclusion: string): PubAdsService;
         /**Enables and disables horizontal centering of ads.*/
         setCentering(centerAds: boolean): void;
-        /**Enables Google Ad Manager cookies on ad requests on the page. This option is set by default.
-    */
+        /**Enables Google Ad Manager cookies on ad requests on the page. This option is set by default.*/
         setCookieOptions(options: 0): PubAdsService;
-        /**Ignores Google Ad Manager cookies on subsequent ad requests and prevents cookies from being created on the page. Note that cookies will not be ignored on certain pingbacks and that this option will disable features that rely on cookies, such as dynamic allocation.
-    */
+        /**Ignores Google Ad Manager cookies on subsequent ad requests and prevents cookies from being created on the page. Note that cookies will not be ignored on certain pingbacks and that this option will disable features that rely on cookies, such as dynamic allocation.*/
         setCookieOptions(options: 1): PubAdsService;
         /**Configures whether all ads on the page should be forced to be rendered using a SafeFrame container.*/
         setForceSafeFrame(forceSafeFrame: boolean): PubAdsService;
